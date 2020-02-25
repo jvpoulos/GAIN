@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use('Agg')
 '''
 Written by Jinsung Yoon
 Date: Jul 9th 2018 (Revised Oct 19th 2018)

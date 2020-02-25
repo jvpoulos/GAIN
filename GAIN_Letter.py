@@ -28,7 +28,7 @@ train_rate = 0.8
 #%% Data
 
 # Data generation
-Data = np.loadtxt("/home/vdslab/Documents/Jinsung/2018_Research/ICML_GAIN/Real_Data/Letter.csv", delimiter=",",skiprows=1)
+Data = np.loadtxt("Letter.csv", delimiter=",",skiprows=1)
 
 # Parameters
 No = len(Data)

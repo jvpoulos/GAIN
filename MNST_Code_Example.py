@@ -34,7 +34,7 @@ Test_No = 10000
 
 #%% Data Input
 # MNIST
-mnist = input_data.read_data_sets('../../MNIST_data', one_hot = True)
+mnist = input_data.read_data_sets('MNIST_data/', one_hot = True)
 
 # X
 trainX, _ = mnist.train.next_batch(Train_No) 

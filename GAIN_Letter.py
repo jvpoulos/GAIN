@@ -12,16 +12,17 @@ Contact: jsyoon0823@g.ucla.edu
 import tensorflow as tf
 import numpy as np
 from tqdm import tqdm
+import itertools
 
 #%% System Parameters
 # 1. Mini batch size
-mb_size = 128
+mb_size = 32
 # 2. Missing rate
 p_miss = 0.2
 # 3. Hint rate
 p_hint = 0.9
 # 4. Loss Hyperparameters
-alpha = 10
+alpha = 20
 # 5. Train Rate
 train_rate = 0.8
 
@@ -36,7 +37,7 @@ Dim = len(Data[0,:])
 
 # Hidden state dimensions
 H_Dim1 = Dim
-H_Dim2 = Dim
+H_Dim2 = Dim/2
 
 # Normalization (0 to 1)
 Min_Val = np.zeros(Dim)
@@ -73,6 +74,13 @@ testX = Data[idx[Train_No:],:]
 # Train / Test Missing Indicators
 trainM = Missing[idx[:Train_No],:]
 testM = Missing[idx[Train_No:],:]
+
+# Export indices and missing indicators for benchmarks
+np.savetxt('letter_results/train.csv',trainX, delimiter=',')
+np.savetxt('letter_results/test.csv',testX, delimiter=',')
+
+np.savetxt('letter_results/train_missing.csv',trainM, delimiter=',')
+np.savetxt('letter_results/test_missing.csv',testM, delimiter=',')
 
 #%% Necessary Functions
 
@@ -137,8 +145,8 @@ theta_G = [G_W1, G_W2, G_W3, G_b1, G_b2, G_b3]
 #%% 1. Generator
 def generator(new_x,m):
     inputs = tf.concat(axis = 1, values = [new_x,m])  # Mask + Data Concatenate
-    G_h1 = tf.nn.relu(tf.matmul(inputs, G_W1) + G_b1)
-    G_h2 = tf.nn.relu(tf.matmul(G_h1, G_W2) + G_b2)   
+    G_h1 = tf.nn.tanh(tf.matmul(inputs, G_W1) + G_b1)
+    G_h2 = tf.nn.tanh(tf.matmul(G_h1, G_W2) + G_b2)   
     G_prob = tf.nn.sigmoid(tf.matmul(G_h2, G_W3) + G_b3) # [0,1] normalized Output
     
     return G_prob
@@ -146,8 +154,8 @@ def generator(new_x,m):
 #%% 2. Discriminator
 def discriminator(new_x, h):
     inputs = tf.concat(axis = 1, values = [new_x,h])  # Hint + Data Concatenate
-    D_h1 = tf.nn.relu(tf.matmul(inputs, D_W1) + D_b1)  
-    D_h2 = tf.nn.relu(tf.matmul(D_h1, D_W2) + D_b2)
+    D_h1 = tf.nn.tanh(tf.matmul(inputs, D_W1) + D_b1)  
+    D_h2 = tf.nn.tanh(tf.matmul(D_h1, D_W2) + D_b2)
     D_logit = tf.matmul(D_h2, D_W3) + D_b3
     D_prob = tf.nn.sigmoid(D_logit)  # [0,1] Probability Output
     
@@ -156,7 +164,7 @@ def discriminator(new_x, h):
 #%% 3. Other functions
 # Random sample generator for Z
 def sample_Z(m, n):
-    return np.random.uniform(0., 0.01, size = [m, n])        
+    return np.random.uniform(0., 0.01, size = [m, n]) 
 
 # Mini-batch generation
 def sample_idx(m, n):
@@ -193,43 +201,46 @@ G_solver = tf.train.AdamOptimizer().minimize(G_loss, var_list=theta_G)
 sess = tf.Session()
 sess.run(tf.global_variables_initializer())
 
-#%% Iterations
+#%% Experiments
 
-#%% Start Iterations
-for it in tqdm(range(5000)):    
-    
-    #%% Inputs
-    mb_idx = sample_idx(Train_No, mb_size)
-    X_mb = trainX[mb_idx,:]  
-    
-    Z_mb = sample_Z(mb_size, Dim) 
-    M_mb = trainM[mb_idx,:]  
-    H_mb1 = sample_M(mb_size, Dim, 1-p_hint)
-    H_mb = M_mb * H_mb1
-    
-    New_X_mb = M_mb * X_mb + (1-M_mb) * Z_mb  # Missing Data Introduce
-    
-    _, D_loss_curr = sess.run([D_solver, D_loss1], feed_dict = {M: M_mb, New_X: New_X_mb, H: H_mb})
-    _, G_loss_curr, MSE_train_loss_curr, MSE_test_loss_curr = sess.run([G_solver, G_loss1, MSE_train_loss, MSE_test_loss],
-                                                                       feed_dict = {X: X_mb, M: M_mb, New_X: New_X_mb, H: H_mb})
-            
-        
-    #%% Intermediate Losses
-    if it % 100 == 0:
-        print('Iter: {}'.format(it))
-        print('Train_loss: {:.4}'.format(np.sqrt(MSE_train_loss_curr)))
-        print('Test_loss: {:.4}'.format(np.sqrt(MSE_test_loss_curr)))
-        print()
-    
-    
-#%% Final Loss
-    
-Z_mb = sample_Z(Test_No, Dim) 
-M_mb = testM
-X_mb = testX
-        
-New_X_mb = M_mb * X_mb + (1-M_mb) * Z_mb  # Missing Data Introduce
-    
-MSE_final, Sample = sess.run([MSE_test_loss, G_sample], feed_dict = {X: testX, M: testM, New_X: New_X_mb})
-        
-print('Final Test RMSE: ' + str(np.sqrt(MSE_final)))
+MSEs = []
+for _ in range(10): 
+
+	#%% Start Iterations
+	for it in tqdm(range(10000)):    
+	    
+	    #%% Inputs
+	    mb_idx = sample_idx(Train_No, mb_size)
+	    X_mb = trainX[mb_idx,:]  
+	    
+	    Z_mb = sample_Z(mb_size, Dim) 
+	    M_mb = trainM[mb_idx,:]  
+	    H_mb1 = sample_M(mb_size, Dim, 1-p_hint)
+	    H_mb = M_mb * H_mb1
+	    
+	    New_X_mb = M_mb * X_mb + (1-M_mb) * Z_mb  # Missing Data Introduce
+	    
+	    _, D_loss_curr = sess.run([D_solver, D_loss1], feed_dict = {M: M_mb, New_X: New_X_mb, H: H_mb})
+	    _, G_loss_curr, MSE_train_loss_curr, MSE_test_loss_curr = sess.run([G_solver, G_loss1, MSE_train_loss, MSE_test_loss],
+	                                                                       feed_dict = {X: X_mb, M: M_mb, New_X: New_X_mb, H: H_mb})
+	            
+	        
+	    #%% Intermediate Losses
+	    if it % 100 == 0:
+	        print('Iter: {}'.format(it))
+	        print('Train_loss: {:.4}'.format(np.sqrt(MSE_train_loss_curr)))
+	        print('Test_loss: {:.4}'.format(np.sqrt(MSE_test_loss_curr)))
+
+	#%% Final Loss
+
+	M_mb = testM
+	X_mb = testX
+	Z_mb = sample_Z(Test_No, Dim)             
+	New_X_mb = M_mb * X_mb + (1-M_mb) * Z_mb  # Missing Data Introduce
+	 
+	Test_Sample, Test_MSE = sess.run([G_sample, MSE_test_loss], feed_dict = {X: testX, M: testM, New_X: New_X_mb})  
+	print('Test RMSE: {:.4}'.format(np.sqrt(Test_MSE)))
+	MSEs.append(Test_MSE)
+
+print('Mean Test RMSE: {:.4}'.format(np.mean(np.sqrt(MSEs))))
+print('SD: {:.4}'.format(np.std(np.sqrt(MSEs))))

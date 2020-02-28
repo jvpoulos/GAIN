@@ -22,3 +22,15 @@ This code shows the implementation of GAIN on MNIST dataset.
 ------------------------------------
 
 Add source codes for UCI Letter and Spam datasets (02/12/2019)
+
+# Prerequsites
+
+### Python 2 (tested on Python 2.7.15)
+
+### Tensorflow 1 (tested on 1.13.1)
+
+### Required packages: {tqdm, matplotlib}:
+
+```
+pip3 install {package}
+```

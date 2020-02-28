@@ -1,6 +1,9 @@
 #%% Packages
 import numpy as np
 
+from sklearn import preprocessing
+min_max_scaler = preprocessing.MinMaxScaler()
+
 #%% System Parameters
 # 1. Mini batch size
 mb_size = 32
@@ -9,7 +12,7 @@ p_miss = 0.2
 # 3. Hint rate
 p_hint = 0.9
 # 4. Loss Hyperparameters
-alpha = 15
+alpha = 10
 # 5. Train Rate
 train_rate = 0.8
 
@@ -24,17 +27,17 @@ Dim = len(Data[0,:])
 
 # Hidden state dimensions
 H_Dim1 = Dim
-H_Dim2 = Dim/2
+H_Dim2 = Dim
 
-# Normalization (0 to 1)
-Min_Val = np.zeros(Dim)
-Max_Val = np.zeros(Dim)
+# # Normalization (0 to 1)
+# Min_Val = np.zeros(Dim)
+# Max_Val = np.zeros(Dim)
 
-for i in range(Dim):
-    Min_Val[i] = np.min(Data[:,i])
-    Data[:,i] = Data[:,i] - np.min(Data[:,i])
-    Max_Val[i] = np.max(Data[:,i])
-    Data[:,i] = Data[:,i] / (np.max(Data[:,i]) + 1e-6)    
+# for i in range(Dim):
+#     Min_Val[i] = np.min(Data[:,i])
+#     Data[:,i] = Data[:,i] - np.min(Data[:,i])
+#     Max_Val[i] = np.max(Data[:,i])
+#     Data[:,i] = Data[:,i] / (np.max(Data[:,i]) + 1e-6)    
 
 GAIN_MSEs = []
 for _ in range(10): 
@@ -65,11 +68,16 @@ for _ in range(10):
     testM = Missing[idx[Train_No:],:]
 
     # Export indices and missing indicators for benchmarks
-    np.savetxt('letter_results/train_{}.csv'.format(_),trainX, delimiter=',')
-    np.savetxt('letter_results/test_{}.csv'.format(_),testX, delimiter=',')
+    np.savetxt('letter/train_data_{}.csv'.format(_),trainX, delimiter=',')
+    np.savetxt('letter/test_data_{}.csv'.format(_),testX, delimiter=',')
 
-    np.savetxt('letter_results/train_missing_{}.csv'.format(_),trainM, delimiter=',')
-    np.savetxt('letter_results/test_missing_{}.csv'.format(_),testM, delimiter=',')
+    np.savetxt('letter/train_missing_{}.csv'.format(_),trainM, delimiter=',')
+    np.savetxt('letter/test_missing_{}.csv'.format(_),testM, delimiter=',')
+
+    # Scale 0 to 1
+
+	trainX = min_max_scaler.fit_transform(trainX)
+	testX = min_max_scaler.transform(testX)
 
     execfile("GAIN.py")
 

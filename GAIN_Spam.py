@@ -76,9 +76,9 @@ for _ in range(10):
     
     # Scale 0 to 1
 
-	trainX = min_max_scaler.fit_transform(trainX)
-	testX = min_max_scaler.transform(testX)
-	
+    trainX = min_max_scaler.fit_transform(trainX)
+    testX = min_max_scaler.transform(testX)
+
     execfile("GAIN.py")
 
 print('GAIN Mean Test RMSE: {:.4}'.format(np.mean(np.sqrt(GAIN_MSEs))))

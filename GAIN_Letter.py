@@ -76,8 +76,8 @@ for _ in range(10):
 
     # Scale 0 to 1
 
-	trainX = min_max_scaler.fit_transform(trainX)
-	testX = min_max_scaler.transform(testX)
+    trainX = min_max_scaler.fit_transform(trainX)
+    testX = min_max_scaler.transform(testX)
 
     execfile("GAIN.py")
 

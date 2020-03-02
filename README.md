@@ -34,3 +34,18 @@ Add source codes for UCI Letter and Spam datasets (02/12/2019)
 ```
 pip3 install {package}
 ```
+
+# Run
+
+Create directory for each dataset; e.g., 
+
+```
+mkdir news
+```
+
+Run with arguments *dataname* *data file*; e.g., 
+
+```
+python train_GAIN.py news News.csv
+```
+

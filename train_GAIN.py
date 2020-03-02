@@ -21,7 +21,8 @@ train_rate = 0.8
 #%% Data
 
 # Data generation
-data_file= str(sys.argv[-1])
+data_file = str(sys.argv[-1])
+data_name= str(sys.argv[-2])
 Data = np.loadtxt(data_file, delimiter=",",skiprows=1)
 
 # Parameters
@@ -71,11 +72,11 @@ for _ in range(10):
     testM = Missing[idx[Train_No:],:]
 
     # Export indices and missing indicators for benchmarks
-    np.savetxt('spam/train_data_{}.csv'.format(_),trainX, delimiter=',')
-    np.savetxt('spam/test_data_{}.csv'.format(_),testX, delimiter=',')
+    np.savetxt('{}/train_data_{}.csv'.format(data_name,_),trainX, delimiter=',')
+    np.savetxt('{}/test_data_{}.csv'.format(data_name,_),testX, delimiter=',')
 
-    np.savetxt('spam/train_missing_{}.csv'.format(_),trainM, delimiter=',')
-    np.savetxt('spam/test_missing_{}.csv'.format(_),testM, delimiter=',')
+    np.savetxt('{}/train_missing_{}.csv'.format(data_name,_),trainM, delimiter=',')
+    np.savetxt('{}/test_missing_{}.csv'.format(data_name,_),testM, delimiter=',')
     
     # Scale 0 to 1
 

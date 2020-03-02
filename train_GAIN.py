@@ -21,7 +21,7 @@ train_rate = 0.8
 #%% Data
 
 # Data generation
-data_file= sys.argv[0]
+data_file= str(sys.argv[0])
 Data = np.loadtxt(data_file, delimiter=",",skiprows=1)
 
 # Parameters

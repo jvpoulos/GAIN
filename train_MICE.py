@@ -13,7 +13,7 @@ from sklearn.ensemble import ExtraTreesRegressor
 from sklearn import preprocessing
 min_max_scaler = preprocessing.MinMaxScaler()
 
-data_name= sys.argv[0]
+data_name= str(sys.argv[0])
 
 MICE_GLM_MSEs = []
 MICE_CART_MSEs = []

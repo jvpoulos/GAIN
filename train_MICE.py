@@ -1,4 +1,8 @@
 #python3
+
+import sys
+import numpy as np
+
 import numpy as np
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
@@ -9,16 +13,18 @@ from sklearn.ensemble import ExtraTreesRegressor
 from sklearn import preprocessing
 min_max_scaler = preprocessing.MinMaxScaler()
 
+data_name= sys.argv[0]
+
 MICE_GLM_MSEs = []
 MICE_CART_MSEs = []
 MICE_CARTX_MSEs = []
 for _ in range(10): 
 
-	trainM = np.loadtxt("letter/train_missing_{}.csv".format(_), delimiter=",")
-	testM = np.loadtxt("letter/test_missing_{}.csv".format(_), delimiter=",")
+	trainM = np.loadtxt("{}/train_missing_{}.csv".format(data_name,_), delimiter=",")
+	testM = np.loadtxt("{}/test_missing_{}.csv".format(data_name,_), delimiter=",")
 
-	trainX = np.loadtxt("letter/train_data_{}.csv".format(_), delimiter=",")
-	testX = np.loadtxt("letter/test_data_{}.csv".format(_), delimiter=",")
+	trainX = np.loadtxt("{}/train_data_{}.csv".format(data_name,_), delimiter=",")
+	testX = np.loadtxt("{}/test_data_{}.csv".format(data_name,_), delimiter=",")
 
 	# Scale 0 to 1
 

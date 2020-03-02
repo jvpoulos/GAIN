@@ -1,4 +1,6 @@
 #%% Packages
+
+import sys
 import numpy as np
 
 from sklearn import preprocessing
@@ -19,7 +21,8 @@ train_rate = 0.8
 #%% Data
 
 # Data generation
-Data = np.loadtxt("Spam.csv", delimiter=",",skiprows=1)
+data_file= sys.argv[0]
+Data = np.loadtxt(data_file, delimiter=",",skiprows=1)
 
 # Parameters
 No = len(Data)

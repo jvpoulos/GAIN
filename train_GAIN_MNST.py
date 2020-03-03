@@ -252,16 +252,16 @@ for run in range(10):
 	        print('Test_loss: {:.4}'.format(MSE_test_loss_curr))
 	        print()
 
-		#%% Final Loss
+	    #%% Final Loss
 
-		M_mb = testM
-		X_mb = testX
-		Z_mb = sample_Z(Test_No, Dim)             
-		New_X_mb = M_mb * X_mb + (1-M_mb) * Z_mb  # Missing Data Introduce
+	    M_mb = testM
+	    X_mb = testX
+	    Z_mb = sample_Z(Test_No, Dim)             
+	    New_X_mb = M_mb * X_mb + (1-M_mb) * Z_mb  # Missing Data Introduce
 
-		Test_Sample, Test_MSE = sess.run([G_sample, MSE_test_loss], feed_dict = {X: X_mb, M: M_mb, Z: New_X_mb})  
-		print('Test RMSE: {:.4}'.format(np.sqrt(Test_MSE)))
-		GAIN_MSEs.append(Test_MSE)
+	    Test_Sample, Test_MSE = sess.run([G_sample, MSE_test_loss], feed_dict = {X: X_mb, M: M_mb, Z: New_X_mb})  
+	    print('Test RMSE: {:.4}'.format(np.sqrt(Test_MSE)))
+	    GAIN_MSEs.append(Test_MSE)
 
 print('GAIN Mean Test RMSE: {:.4}'.format(np.mean(np.sqrt(GAIN_MSEs))))
 print('GAIN SD: {:.4}'.format(np.std(np.sqrt(GAIN_MSEs))))    

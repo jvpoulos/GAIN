@@ -35,7 +35,9 @@ Add source codes for UCI Letter and Spam datasets (02/12/2019)
 pip3 install {package}
 ```
 
-# Run
+The code implementing MICE requires Python 3 (tested on 3.6.6) and scikit-learn (tested on 0.21.2).
+
+# Train GAIN
 
 Create directory for each dataset; e.g., 
 
@@ -48,4 +50,10 @@ Run with arguments *dataname* *data file*; e.g.,
 ```
 python train_GAIN.py news News.csv
 ```
+# Benchmark estimators
 
+Run with arguments *dataname*; e.g., 
+
+```
+python3 train_MICE.py news
+```

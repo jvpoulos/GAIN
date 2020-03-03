@@ -38,10 +38,6 @@ Test_No = 10000
 # MNIST
 mnist = input_data.read_data_sets('MNIST_data/', one_hot = True)
 
-# X
-trainX, _ = mnist.train.next_batch(Train_No) 
-testX, _  = mnist.test.next_batch(Test_No) 
-
 # Mask Vector and Hint Vector Generation
 def sample_M(m, n, p):
     A = np.random.uniform(0., 1., size = [m, n])
@@ -185,8 +181,19 @@ i = 1
 GAIN_MSEs = []
 for _ in range(10): 
 
+	# X
+	trainX, _ = mnist.train.next_batch(Train_No) 
+	testX, _  = mnist.test.next_batch(Test_No) 
+	
 	trainM = sample_M(Train_No, Dim, p_miss)
 	testM = sample_M(Test_No, Dim, p_miss)
+
+	# Export indices and missing indicators for benchmarks
+    np.savetxt('{}/train_data_{}.csv'.format(data_name,_),trainX, delimiter=',')
+    np.savetxt('{}/test_data_{}.csv'.format(data_name,_),testX, delimiter=',')
+
+    np.savetxt('{}/train_missing_{}.csv'.format(data_name,_),trainM, delimiter=',')
+    np.savetxt('{}/test_missing_{}.csv'.format(data_name,_),testM, delimiter=',')
 
 	#%% Start Iterations
 	for it in tqdm(range(5000)):    

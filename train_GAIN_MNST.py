@@ -21,9 +21,9 @@ from tqdm import tqdm
 
 #%% System Parameters
 # 1. Mini batch size
-mb_size = 128
+mb_size = 32
 # 2. Missing rate
-p_miss = 0.5
+p_miss = 0.2
 # 3. Hint rate
 p_hint = 0.9
 # 4. Loss Hyperparameters
@@ -48,9 +48,6 @@ def sample_M(m, n, p):
     B = A > p
     C = 1.*B
     return C
-  
-trainM = sample_M(Train_No, Dim, p_miss)
-testM = sample_M(Test_No, Dim, p_miss)
 
 #%% Necessary Functions
 # 1. Xavier Initialization Definition
@@ -176,66 +173,88 @@ sess.run(tf.global_variables_initializer())
 
 #%%
 # Output Initialization
-if not os.path.exists('Multiple_Impute_out1/'):
-    os.makedirs('Multiple_Impute_out1/')
+# if not os.path.exists('Multiple_Impute_out1/'):
+#     os.makedirs('Multiple_Impute_out1/')
+
+if not os.path.exists('mnist/'):
+    os.makedirs('mnist/')
     
 # Iteration Initialization
 i = 1
 
-#%% Start Iterations
-for it in tqdm(range(10000)):    
-    
-    #%% Inputs
-    mb_idx = sample_idx(Train_No, mb_size)
-    X_mb = trainX[mb_idx,:]  
-    Z_mb = sample_Z(mb_size, Dim) 
-    M_mb = trainM[mb_idx,:]  
-    H_mb1 = sample_M(mb_size, Dim, 1-p_hint)
-    H_mb = M_mb * H_mb1
-    
-    New_X_mb = M_mb * X_mb + (1-M_mb) * Z_mb  # Missing Data Introduce
-    
-    _, D_loss_curr = sess.run([D_solver, D_loss1], feed_dict = {X: X_mb, M: M_mb, Z: New_X_mb, H: H_mb})
-    _, G_loss_curr, MSE_train_loss_curr, MSE_test_loss_curr = sess.run([G_solver, G_loss1, MSE_train_loss, MSE_test_loss],
-                                                                       feed_dict = {X: X_mb, M: M_mb, Z: New_X_mb, H: H_mb})
-            
-    #%% Output figure
-    if it % 100 == 0:
-      
-        mb_idx = sample_idx(Test_No, 5)
-        X_mb = testX[mb_idx,:]
-        M_mb = testM[mb_idx,:]  
-        Z_mb = sample_Z(5, Dim) 
-    
-        New_X_mb = M_mb * X_mb + (1-M_mb) * Z_mb
-        
-        samples1 = X_mb                
-        samples5 = M_mb * X_mb + (1-M_mb) * Z_mb
-        
-        samples2 = sess.run(G_sample, feed_dict = {X: X_mb, M: M_mb, Z: New_X_mb})
-        samples2 = M_mb * X_mb + (1-M_mb) * samples2        
-        
-        Z_mb = sample_Z(5, Dim) 
-        New_X_mb = M_mb * X_mb + (1-M_mb) * Z_mb       
-        samples3 = sess.run(G_sample, feed_dict = {X: X_mb, M: M_mb, Z: New_X_mb})
-        samples3 = M_mb * X_mb + (1-M_mb) * samples3     
-        
-        Z_mb = sample_Z(5, Dim) 
-        New_X_mb = M_mb * X_mb + (1-M_mb) * Z_mb       
-        samples4 = sess.run(G_sample, feed_dict = {X: X_mb, M: M_mb, Z: New_X_mb})
-        samples4 = M_mb * X_mb + (1-M_mb) * samples4     
-        
-        samples = np.vstack([samples5, samples2, samples3, samples4, samples1])          
-        
-        fig = plot(samples)
-        plt.savefig('Multiple_Impute_out1/{}.png'.format(str(i).zfill(3)), bbox_inches='tight')
-        i += 1
-        plt.close(fig)
-        
-    #%% Intermediate Losses
-    if it % 100 == 0:
-        print('Iter: {}'.format(it))
-        print('Train_loss: {:.4}'.format(MSE_train_loss_curr))
-        print('Test_loss: {:.4}'.format(MSE_test_loss_curr))
-        print()
-    
+GAIN_MSEs = []
+for _ in range(10): 
+
+	trainM = sample_M(Train_No, Dim, p_miss)
+	testM = sample_M(Test_No, Dim, p_miss)
+
+	#%% Start Iterations
+	for it in tqdm(range(5000)):    
+	    
+	    #%% Inputs
+	    mb_idx = sample_idx(Train_No, mb_size)
+	    X_mb = trainX[mb_idx,:]  
+	    Z_mb = sample_Z(mb_size, Dim) 
+	    M_mb = trainM[mb_idx,:]  
+	    H_mb1 = sample_M(mb_size, Dim, 1-p_hint)
+	    H_mb = M_mb * H_mb1
+	    
+	    New_X_mb = M_mb * X_mb + (1-M_mb) * Z_mb  # Missing Data Introduce
+	    
+	    _, D_loss_curr = sess.run([D_solver, D_loss1], feed_dict = {X: X_mb, M: M_mb, Z: New_X_mb, H: H_mb})
+	    _, G_loss_curr, MSE_train_loss_curr, MSE_test_loss_curr = sess.run([G_solver, G_loss1, MSE_train_loss, MSE_test_loss],
+	                                                                       feed_dict = {X: X_mb, M: M_mb, Z: New_X_mb, H: H_mb})
+	            
+	    # #%% Output figure
+	    # if it % 100 == 0:
+	      
+	    #     mb_idx = sample_idx(Test_No, 5)
+	    #     X_mb = testX[mb_idx,:]
+	    #     M_mb = testM[mb_idx,:]  
+	    #     Z_mb = sample_Z(5, Dim) 
+	    
+	    #     New_X_mb = M_mb * X_mb + (1-M_mb) * Z_mb
+	        
+	    #     samples1 = X_mb                
+	    #     samples5 = M_mb * X_mb + (1-M_mb) * Z_mb
+	        
+	    #     samples2 = sess.run(G_sample, feed_dict = {X: X_mb, M: M_mb, Z: New_X_mb})
+	    #     samples2 = M_mb * X_mb + (1-M_mb) * samples2        
+	        
+	    #     Z_mb = sample_Z(5, Dim) 
+	    #     New_X_mb = M_mb * X_mb + (1-M_mb) * Z_mb       
+	    #     samples3 = sess.run(G_sample, feed_dict = {X: X_mb, M: M_mb, Z: New_X_mb})
+	    #     samples3 = M_mb * X_mb + (1-M_mb) * samples3     
+	        
+	    #     Z_mb = sample_Z(5, Dim) 
+	    #     New_X_mb = M_mb * X_mb + (1-M_mb) * Z_mb       
+	    #     samples4 = sess.run(G_sample, feed_dict = {X: X_mb, M: M_mb, Z: New_X_mb})
+	    #     samples4 = M_mb * X_mb + (1-M_mb) * samples4     
+	        
+	    #     samples = np.vstack([samples5, samples2, samples3, samples4, samples1])          
+	        
+	        # fig = plot(samples)
+	        # plt.savefig('Multiple_Impute_out1/{}.png'.format(str(i).zfill(3)), bbox_inches='tight')
+	        # i += 1
+	        # plt.close(fig)
+	        
+	    #%% Intermediate Losses
+	    if it % 100 == 0:
+	        print('Iter: {}'.format(it))
+	        print('Train_loss: {:.4}'.format(MSE_train_loss_curr))
+	        print('Test_loss: {:.4}'.format(MSE_test_loss_curr))
+	        print()
+
+		#%% Final Loss
+
+		M_mb = testM
+		X_mb = testX
+		Z_mb = sample_Z(Test_No, Dim)             
+		New_X_mb = M_mb * X_mb + (1-M_mb) * Z_mb  # Missing Data Introduce
+
+		Test_Sample, Test_MSE = sess.run([G_sample, MSE_test_loss], feed_dict = {X: testX, M: testM, New_X: New_X_mb})  
+		print('Test RMSE: {:.4}'.format(np.sqrt(Test_MSE)))
+		GAIN_MSEs.append(Test_MSE)
+
+print('GAIN Mean Test RMSE: {:.4}'.format(np.mean(np.sqrt(GAIN_MSEs))))
+print('GAIN SD: {:.4}'.format(np.std(np.sqrt(GAIN_MSEs))))    

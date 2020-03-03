@@ -189,11 +189,11 @@ for _ in range(10):
 	testM = sample_M(Test_No, Dim, p_miss)
 
 	# Export indices and missing indicators for benchmarks
-	np.savetxt('{}/train_data_{}.csv'.format(data_name,_),trainX, delimiter=',')
-	np.savetxt('{}/test_data_{}.csv'.format(data_name,_),testX, delimiter=',')
+	np.savetxt('mnist/train_data_{}.csv'.format(_),trainX, delimiter=',')
+	np.savetxt('mnist/test_data_{}.csv'.format(_),testX, delimiter=',')
 
-	np.savetxt('{}/train_missing_{}.csv'.format(data_name,_),trainM, delimiter=',')
-	np.savetxt('{}/test_missing_{}.csv'.format(data_name,_),testM, delimiter=',')
+	np.savetxt('mnist/train_missing_{}.csv'.format(_),trainM, delimiter=',')
+	np.savetxt('mnist/test_missing_{}.csv'.format(_),testM, delimiter=',')
 
 	#%% Start Iterations
 	for it in tqdm(range(5000)):    

@@ -175,11 +175,11 @@ sess.run(tf.global_variables_initializer())
 if not os.path.exists('mnist/'):
     os.makedirs('mnist/')
     
-# Iteration Initialization
-i = 1
+# # Iteration Initialization
+# i = 1
 
 GAIN_MSEs = []
-for _ in range(10): 
+for run in range(10): 
 
 	# X
 	trainX, _ = mnist.train.next_batch(Train_No) 
@@ -189,11 +189,11 @@ for _ in range(10):
 	testM = sample_M(Test_No, Dim, p_miss)
 
 	# Export indices and missing indicators for benchmarks
-	np.savetxt('mnist/train_data_{}.csv'.format(_),trainX, delimiter=',')
-	np.savetxt('mnist/test_data_{}.csv'.format(_),testX, delimiter=',')
+	np.savetxt('mnist/train_data_{}.csv'.format(run),trainX, delimiter=',')
+	np.savetxt('mnist/test_data_{}.csv'.format(run),testX, delimiter=',')
 
-	np.savetxt('mnist/train_missing_{}.csv'.format(_),trainM, delimiter=',')
-	np.savetxt('mnist/test_missing_{}.csv'.format(_),testM, delimiter=',')
+	np.savetxt('mnist/train_missing_{}.csv'.format(run),trainM, delimiter=',')
+	np.savetxt('mnist/test_missing_{}.csv'.format(run),testM, delimiter=',')
 
 	#%% Start Iterations
 	for it in tqdm(range(5000)):    

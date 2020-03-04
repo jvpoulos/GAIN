@@ -45,7 +45,10 @@ for _ in range(10):
 
 	# MICE-GLM
 	if classification==0:
-		mice_glm = IterativeImputer(max_iter=10, random_state=0, tol=0.01, estimator=LinearRegression()) 
+		if data_name = 'mnst':
+			mice_glm = IterativeImputer(max_iter=1, random_state=0, estimator=LinearRegression()) 
+		else:
+			mice_glm = IterativeImputer(max_iter=10, random_state=0, tol=0.01, estimator=LinearRegression()) 
 	else:
 		mice_glm = IterativeImputer(max_iter=5, random_state=0, estimator=LogisticRegression()) 
 	mice_glm.fit(trainXM)
@@ -58,7 +61,10 @@ for _ in range(10):
 	# MICE-CART
 
 	if classification==0:
-		mice_cart = IterativeImputer(max_iter=10, random_state=0, tol=0.01, estimator=DecisionTreeRegressor(random_state=0)) 
+		if data_name ='mnst':
+			mice_cart = IterativeImputer(max_iter=1, random_state=0, estimator=DecisionTreeRegressor(random_state=0)) 
+		else:
+			mice_cart = IterativeImputer(max_iter=10, random_state=0, tol=0.01, estimator=DecisionTreeRegressor(random_state=0)) 
 	else:
 		mice_cart = IterativeImputer(max_iter=5, random_state=0, estimator=DecisionTreeClassifier(random_state=0)) 
 	mice_cart.fit(trainXM)
@@ -71,7 +77,10 @@ for _ in range(10):
 	# MICE-CARTX
 
 	if classification==0:
-		mice_cartx = IterativeImputer(max_iter=10, random_state=0, estimator=ExtraTreesRegressor(n_estimators=10,random_state=0)) 
+		if data_name='mnst':
+			mice_cartx = IterativeImputer(max_iter=1, random_state=0, estimator=ExtraTreesRegressor(n_estimators=5,random_state=0)) 
+		else:
+			mice_cartx = IterativeImputer(max_iter=10, random_state=0, estimator=ExtraTreesRegressor(n_estimators=10,random_state=0))			
 	else:
 		mice_cartx = IterativeImputer(max_iter=5, random_state=0, estimator=ExtraTreesClassifier(n_estimators=5,random_state=0)) 
 	mice_cartx.fit(trainXM)

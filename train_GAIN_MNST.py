@@ -18,6 +18,7 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import os
 from tqdm import tqdm
+import sys
 
 #%% System Parameters
 # 1. Mini batch size
@@ -34,9 +35,15 @@ Dim = 784
 Train_No = 55000
 Test_No = 10000
 
+classification = sys.argv[-1]
+
 #%% Data Input
 # MNIST
-mnist = input_data.read_data_sets('MNIST_data/', one_hot = True)
+
+if classification == 0:
+	mnist = input_data.read_data_sets('MNIST_data/', one_hot = True)
+else:
+	mnist = input_data.read_data_sets('MNIST_data/', one_hot = False)
 
 # Mask Vector and Hint Vector Generation
 def sample_M(m, n, p):
@@ -124,13 +131,16 @@ def generator(x,z,m):
     return G_prob
     
 #%% 2. Discriminator
-def discriminator(x, m, g, h):
+def discriminator(x, m, g, h, classification):
     inp = m * x + (1-m) * g  # Replace missing values to the imputed values
     inputs = tf.concat(axis = 1, values = [inp,h])  # Hint + Data Concatenate
     D_h1 = tf.nn.relu(tf.matmul(inputs, D_W1) + D_b1)
     D_h2 = tf.nn.relu(tf.matmul(D_h1, D_W2) + D_b2)
     D_logit = tf.matmul(D_h2, D_W3) + D_b3
-    D_prob = tf.nn.sigmoid(D_logit)  # [0,1] Probability Output
+    if classification == 0:
+    	D_prob = tf.nn.sigmoid(D_logit)  # [0,1] Probability Output
+    else:
+    	D_prob = D_logit
     
     return D_prob
 
@@ -146,7 +156,7 @@ def sample_idx(m, n):
 
 #%% Structure
 G_sample = generator(X,Z,M)
-D_prob = discriminator(X, M, G_sample, H)
+D_prob = discriminator(X, M, G_sample, H, classification)
 
 #%% Loss
 D_loss1 = -tf.reduce_mean(M * tf.log(D_prob + 1e-8) + (1-M) * tf.log(1. - D_prob + 1e-8)) * 2
@@ -167,16 +177,16 @@ G_solver = tf.train.AdamOptimizer().minimize(G_loss, var_list=theta_G)
 sess = tf.Session()
 sess.run(tf.global_variables_initializer())
 
-#%%
-# Output Initialization
-# if not os.path.exists('Multiple_Impute_out1/'):
-#     os.makedirs('Multiple_Impute_out1/')
+%%
+Output Initialization
+if not os.path.exists('MNIST_output/'):
+    os.makedirs('MNIST_output/')
 
 if not os.path.exists('mnist/'):
     os.makedirs('mnist/')
     
-# # Iteration Initialization
-# i = 1
+# Iteration Initialization
+i = 1
 
 GAIN_MSEs = []
 for run in range(10): 
@@ -212,38 +222,38 @@ for run in range(10):
 	    _, G_loss_curr, MSE_train_loss_curr, MSE_test_loss_curr = sess.run([G_solver, G_loss1, MSE_train_loss, MSE_test_loss],
 	                                                                       feed_dict = {X: X_mb, M: M_mb, Z: New_X_mb, H: H_mb})
 	            
-	    # #%% Output figure
-	    # if it % 100 == 0:
+	    #%% Output figure
+	    if it % 1000 == 0:
 	      
-	    #     mb_idx = sample_idx(Test_No, 5)
-	    #     X_mb = testX[mb_idx,:]
-	    #     M_mb = testM[mb_idx,:]  
-	    #     Z_mb = sample_Z(5, Dim) 
+	        mb_idx = sample_idx(Test_No, 5)
+	        X_mb = testX[mb_idx,:]
+	        M_mb = testM[mb_idx,:]  
+	        Z_mb = sample_Z(5, Dim) 
 	    
-	    #     New_X_mb = M_mb * X_mb + (1-M_mb) * Z_mb
+	        New_X_mb = M_mb * X_mb + (1-M_mb) * Z_mb
 	        
-	    #     samples1 = X_mb                
-	    #     samples5 = M_mb * X_mb + (1-M_mb) * Z_mb
+	        samples1 = X_mb                
+	        samples5 = M_mb * X_mb + (1-M_mb) * Z_mb
 	        
-	    #     samples2 = sess.run(G_sample, feed_dict = {X: X_mb, M: M_mb, Z: New_X_mb})
-	    #     samples2 = M_mb * X_mb + (1-M_mb) * samples2        
+	        samples2 = sess.run(G_sample, feed_dict = {X: X_mb, M: M_mb, Z: New_X_mb})
+	        samples2 = M_mb * X_mb + (1-M_mb) * samples2        
 	        
-	    #     Z_mb = sample_Z(5, Dim) 
-	    #     New_X_mb = M_mb * X_mb + (1-M_mb) * Z_mb       
-	    #     samples3 = sess.run(G_sample, feed_dict = {X: X_mb, M: M_mb, Z: New_X_mb})
-	    #     samples3 = M_mb * X_mb + (1-M_mb) * samples3     
+	        Z_mb = sample_Z(5, Dim) 
+	        New_X_mb = M_mb * X_mb + (1-M_mb) * Z_mb       
+	        samples3 = sess.run(G_sample, feed_dict = {X: X_mb, M: M_mb, Z: New_X_mb})
+	        samples3 = M_mb * X_mb + (1-M_mb) * samples3     
 	        
-	    #     Z_mb = sample_Z(5, Dim) 
-	    #     New_X_mb = M_mb * X_mb + (1-M_mb) * Z_mb       
-	    #     samples4 = sess.run(G_sample, feed_dict = {X: X_mb, M: M_mb, Z: New_X_mb})
-	    #     samples4 = M_mb * X_mb + (1-M_mb) * samples4     
+	        Z_mb = sample_Z(5, Dim) 
+	        New_X_mb = M_mb * X_mb + (1-M_mb) * Z_mb       
+	        samples4 = sess.run(G_sample, feed_dict = {X: X_mb, M: M_mb, Z: New_X_mb})
+	        samples4 = M_mb * X_mb + (1-M_mb) * samples4     
 	        
-	    #     samples = np.vstack([samples5, samples2, samples3, samples4, samples1])          
+	        samples = np.vstack([samples5, samples2, samples3, samples4, samples1])          
 	        
-	        # fig = plot(samples)
-	        # plt.savefig('Multiple_Impute_out1/{}.png'.format(str(i).zfill(3)), bbox_inches='tight')
-	        # i += 1
-	        # plt.close(fig)
+	        fig = plot(samples)
+	        plt.savefig('Multiple_Impute_out1/{}.png'.format(str(i).zfill(3)), bbox_inches='tight')
+	        i += 1
+	        plt.close(fig)
 	        
 	    #%% Intermediate Losses
 	    if it % 100 == 0:

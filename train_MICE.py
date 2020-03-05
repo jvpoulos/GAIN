@@ -50,7 +50,7 @@ for _ in range(10):
 		else:
 			mice_glm = IterativeImputer(max_iter=10, random_state=0, tol=0.01, estimator=LinearRegression()) 
 	else:
-		mice_glm = IterativeImputer(max_iter=5, random_state=0, estimator=LogisticRegression()) 
+		mice_glm = IterativeImputer(max_iter=1, random_state=0, estimator=LogisticRegression()) 
 	mice_glm.fit(trainXM)
 
 	MSE_test_loss = np.mean(((1-testM) * testX - (1-testM)*mice_glm.transform(testXM))**2) / np.mean(1-testM)
@@ -66,7 +66,7 @@ for _ in range(10):
 		else:
 			mice_cart = IterativeImputer(max_iter=10, random_state=0, tol=0.01, estimator=DecisionTreeRegressor(random_state=0)) 
 	else:
-		mice_cart = IterativeImputer(max_iter=5, random_state=0, estimator=DecisionTreeClassifier(random_state=0)) 
+		mice_cart = IterativeImputer(max_iter=1, random_state=0, estimator=DecisionTreeClassifier(random_state=0)) 
 	mice_cart.fit(trainXM)
 
 	MSE_test_loss = np.mean(((1-testM) * testX - (1-testM)*mice_cart.transform(testXM))**2) / np.mean(1-testM)
@@ -82,7 +82,7 @@ for _ in range(10):
 		else:
 			mice_cartx = IterativeImputer(max_iter=10, random_state=0, estimator=ExtraTreesRegressor(n_estimators=10,random_state=0))			
 	else:
-		mice_cartx = IterativeImputer(max_iter=5, random_state=0, estimator=ExtraTreesClassifier(n_estimators=5,random_state=0)) 
+		mice_cartx = IterativeImputer(max_iter=1, random_state=0, estimator=ExtraTreesClassifier(n_estimators=5,random_state=0)) 
 	mice_cartx.fit(trainXM)
 
 	MSE_test_loss = np.mean(((1-testM) * testX - (1-testM)*mice_cartx.transform(testXM))**2) / np.mean(1-testM)

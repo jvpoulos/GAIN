@@ -50,10 +50,17 @@ Run with arguments *dataname* *data file*; e.g.,
 ```
 python train_GAIN.py news News.csv
 ```
-# Benchmark estimators
-
-Run with arguments *dataname*; e.g., 
+for UCI datasets, or run with arguments *classification*; e.g., 
 
 ```
-python3 train_MICE.py news
+python train_GAIN_MNST.py 0
+```
+for MNST dataset. 
+
+# Benchmark estimators
+
+Run with arguments *dataname* *classification*; e.g., 
+
+```
+python3 train_MICE.py news 0
 ```

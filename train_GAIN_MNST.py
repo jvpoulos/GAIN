@@ -250,7 +250,7 @@ for run in range(10):
 	        samples = np.vstack([samples5, samples2, samples3, samples4, samples1])          
 	        
 	        fig = plot(samples)
-	        plt.savefig('Multiple_Impute_out1/{}.png'.format(str(i).zfill(3)), bbox_inches='tight')
+	        plt.savefig('MNIST_output/{}.png'.format(str(i).zfill(3)), bbox_inches='tight')
 	        i += 1
 	        plt.close(fig)
 	        

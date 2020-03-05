@@ -59,8 +59,8 @@ for MNST dataset.
 
 # Benchmark estimators
 
-Run with arguments *dataname* *classification*; e.g., 
+Run with arguments *classification* *dataname*; e.g., 
 
 ```
-python3 train_MICE.py news 0
+python3 train_MICE.py 0 news
 ```

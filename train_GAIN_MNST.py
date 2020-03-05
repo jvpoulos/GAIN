@@ -177,8 +177,7 @@ G_solver = tf.train.AdamOptimizer().minimize(G_loss, var_list=theta_G)
 sess = tf.Session()
 sess.run(tf.global_variables_initializer())
 
-%%
-Output Initialization
+# Output Initialization
 if not os.path.exists('MNIST_output/'):
     os.makedirs('MNIST_output/')
 

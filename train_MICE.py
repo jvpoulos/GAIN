@@ -45,7 +45,7 @@ for _ in range(10):
 
 	# MICE-GLM
 	if classification==0:
-		if data_name = 'mnst':
+		if data_name == 'mnist':
 			mice_glm = IterativeImputer(max_iter=1, random_state=0, estimator=LinearRegression()) 
 		else:
 			mice_glm = IterativeImputer(max_iter=10, random_state=0, tol=0.01, estimator=LinearRegression()) 
@@ -61,7 +61,7 @@ for _ in range(10):
 	# MICE-CART
 
 	if classification==0:
-		if data_name ='mnst':
+		if data_name =='mnist':
 			mice_cart = IterativeImputer(max_iter=1, random_state=0, estimator=DecisionTreeRegressor(random_state=0)) 
 		else:
 			mice_cart = IterativeImputer(max_iter=10, random_state=0, tol=0.01, estimator=DecisionTreeRegressor(random_state=0)) 
@@ -77,7 +77,7 @@ for _ in range(10):
 	# MICE-CARTX
 
 	if classification==0:
-		if data_name='mnst':
+		if data_name=='mnist':
 			mice_cartx = IterativeImputer(max_iter=1, random_state=0, estimator=ExtraTreesRegressor(n_estimators=5,random_state=0)) 
 		else:
 			mice_cartx = IterativeImputer(max_iter=10, random_state=0, estimator=ExtraTreesRegressor(n_estimators=10,random_state=0))			
